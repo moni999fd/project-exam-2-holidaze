@@ -9,6 +9,7 @@ function HomePage() {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     async function loadVenues() {
@@ -25,6 +26,16 @@ function HomePage() {
     loadVenues();
   }, []);
 
+  const filteredVenues = venues.filter((venue) => {
+  const query = searchQuery.toLowerCase();
+
+  return (
+    venue.name.toLowerCase().includes(query) ||
+    venue.location?.city?.toLowerCase().includes(query) ||
+    venue.location?.country?.toLowerCase().includes(query)
+  );
+});
+
   if (loading) {
     return <p className="text-stone-700">Loading venues...</p>;
   }
@@ -35,14 +46,20 @@ function HomePage() {
 
   return (
   <section className="mx-auto max-w-6xl space-y-10 px-4 md:px-6 lg:px-8">
-    <HeroSearch />
+    <HeroSearch searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {venues.slice(0, visibleCount).map((venue) => (
+      {filteredVenues.slice(0, visibleCount).map((venue) => (
         <VenueCard key={venue.id} venue={venue} />
       ))}
     </div>
-    {visibleCount < venues.length && (
+    {filteredVenues.length === 0 && (
+      <p className="text-center text-stone-500">
+        No venues found.
+      </p>
+    )}
+
+    {visibleCount < filteredVenues.length && (
   <div className="flex justify-center pt-6">
     <button
       onClick={() => setVisibleCount((prev) => prev + 6)}

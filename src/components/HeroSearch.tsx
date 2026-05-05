@@ -1,14 +1,19 @@
-function HeroSearch() {
+interface HeroSearchProps {
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
+}
+
+function HeroSearch({ searchQuery, onSearchChange }: HeroSearchProps) {
   return (
     <section className="relative mb-10 overflow-hidden rounded-3xl px-6 py-20 text-white">
       <div className="absolute inset-0">
-  <img
-    src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
-    alt="Luxury stay"
-    className="h-full w-full object-cover"
-  />
-  <div className="absolute inset-0 bg-black/50" />
-</div>
+        <img
+          src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
+          alt="Luxury stay"
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/50" />
+      </div>
 
       <div className="relative mx-auto max-w-5xl text-center">
         <h1 className="mb-8 text-4xl font-semibold tracking-tight md:text-5xl">
@@ -22,6 +27,8 @@ function HeroSearch() {
             </span>
             <input
               type="text"
+              value={searchQuery}
+              onChange={(event) => onSearchChange(event.target.value)}
               placeholder="Search destination"
               className="w-full bg-transparent text-sm outline-none"
             />
