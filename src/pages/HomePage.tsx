@@ -10,13 +10,14 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [guestCount, setGuestCount] = useState("");
 
   useEffect(() => {
     async function loadVenues() {
       try {
         const data = await getVenues();
         setVenues(data);
-      } catch (err) {
+      } catch {
         setError("Something went wrong while fetching venues.");
       } finally {
         setLoading(false);
@@ -27,14 +28,18 @@ function HomePage() {
   }, []);
 
   const filteredVenues = venues.filter((venue) => {
-  const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase();
+    const guests = guestCount ? Number(guestCount) : 0;
 
-  return (
-    venue.name.toLowerCase().includes(query) ||
-    venue.location?.city?.toLowerCase().includes(query) ||
-    venue.location?.country?.toLowerCase().includes(query)
-  );
-});
+    const matchesSearch =
+      venue.name.toLowerCase().includes(query) ||
+      venue.location?.city?.toLowerCase().includes(query) ||
+      venue.location?.country?.toLowerCase().includes(query);
+
+    const matchesGuests = guests === 0 || venue.maxGuests >= guests;
+
+    return matchesSearch && matchesGuests;
+  });
 
   if (loading) {
     return <p className="text-stone-700">Loading venues...</p>;
@@ -45,32 +50,39 @@ function HomePage() {
   }
 
   return (
-  <section className="mx-auto max-w-6xl space-y-10 px-4 md:px-6 lg:px-8">
-    <HeroSearch searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+    <section className="mx-auto max-w-6xl space-y-10 px-4 md:px-6 lg:px-8">
+      <HeroSearch
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        guestCount={guestCount}
+        onGuestChange={setGuestCount}
+      />
 
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {filteredVenues.slice(0, visibleCount).map((venue) => (
-        <VenueCard key={venue.id} venue={venue} />
-      ))}
-    </div>
-    {filteredVenues.length === 0 && (
-      <p className="text-center text-stone-500">
-        No venues found.
-      </p>
-    )}
+      <div
+        id="results"
+        className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+      >
+        {filteredVenues.slice(0, visibleCount).map((venue) => (
+          <VenueCard key={venue.id} venue={venue} />
+        ))}
+      </div>
 
-    {visibleCount < filteredVenues.length && (
-  <div className="flex justify-center pt-6">
-    <button
-      onClick={() => setVisibleCount((prev) => prev + 6)}
-      className="rounded-xl bg-[#02101f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#162036] shadow-sm hover:shadow-md"
-    >
-      Discover more
-    </button>
-  </div>
-)}
-  </section>
-);
+      {filteredVenues.length === 0 && (
+        <p className="text-center text-stone-500">No venues found.</p>
+      )}
+
+      {visibleCount < filteredVenues.length && (
+        <div className="flex justify-center pt-6">
+          <button
+            onClick={() => setVisibleCount((prev) => prev + 6)}
+            className="rounded-xl bg-[#02101f] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#162036] hover:shadow-md"
+          >
+            Discover more
+          </button>
+        </div>
+      )}
+    </section>
+  );
 }
 
 export default HomePage;

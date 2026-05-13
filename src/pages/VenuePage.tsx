@@ -120,7 +120,24 @@ function VenuePage() {
             <span className="text-sm font-normal text-stone-500">/ night</span>
           </p>
 
-          <form className="space-y-4">
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+
+              if (!checkIn || !checkOut) {
+                alert("Please select dates");
+                return;
+              }
+
+              if (guests < 1) {
+                alert("Guests must be at least 1");
+                return;
+              }
+
+              alert("Booking successful (demo) 🎉");
+              }}
+              className="space-y-4"
+            >
             <label className="block">
               <span className="mb-1 block text-xs font-medium text-stone-500">
                 Check-in

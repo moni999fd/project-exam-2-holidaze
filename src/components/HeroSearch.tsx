@@ -1,9 +1,16 @@
 interface HeroSearchProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
+  guestCount: string;
+  onGuestChange: (value: string) => void;
 }
 
-function HeroSearch({ searchQuery, onSearchChange }: HeroSearchProps) {
+function HeroSearch({
+  searchQuery,
+  onSearchChange,
+  guestCount,
+  onGuestChange,
+}: HeroSearchProps) {
   return (
     <section className="relative mb-10 overflow-hidden rounded-3xl px-6 py-20 text-white">
       <div className="absolute inset-0">
@@ -20,7 +27,18 @@ function HeroSearch({ searchQuery, onSearchChange }: HeroSearchProps) {
           Find your next stay
         </h1>
 
-        <form className="mx-auto grid max-w-4xl gap-3 rounded-3xl bg-white p-4 text-left text-stone-900 shadow-xl md:grid-cols-[1.5fr_1fr_1fr_auto]">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+
+            const results = document.getElementById("results");
+
+            if (results) {
+              results.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+          className="mx-auto grid max-w-4xl gap-3 rounded-3xl bg-white p-4 text-left text-stone-900 shadow-xl md:grid-cols-[1.5fr_1fr_1fr_1fr_auto]"
+        >
           <label className="rounded-xl border border-stone-300 px-4 py-3">
             <span className="block text-xs font-semibold text-stone-500">
               Where
@@ -36,24 +54,36 @@ function HeroSearch({ searchQuery, onSearchChange }: HeroSearchProps) {
 
           <label className="rounded-xl border border-stone-300 px-4 py-3">
             <span className="block text-xs font-semibold text-stone-500">
-              Dates
+               Check-in
             </span>
             <input
-              type="text"
-              placeholder="Select dates"
+               type="date"
               className="w-full bg-transparent text-sm outline-none"
             />
           </label>
 
           <label className="rounded-xl border border-stone-300 px-4 py-3">
             <span className="block text-xs font-semibold text-stone-500">
+              Check-out
+            </span>
+            <input
+              type="date"
+              className="w-full bg-transparent text-sm outline-none"
+          />
+        </label>
+
+          <label className="rounded-xl border border-stone-300 px-4 py-3">
+            <span className="block text-xs font-semibold text-stone-500">
               Guests
             </span>
             <input
-              type="text"
-              placeholder="2 guests"
-              className="w-full bg-transparent text-sm outline-none"
-            />
+            type="number"
+            min="1"
+            value={guestCount}
+            onChange={(event) => onGuestChange(event.target.value)}
+            placeholder="2 guests"
+            className="w-full bg-transparent text-sm outline-none"
+          />
           </label>
 
           <button
